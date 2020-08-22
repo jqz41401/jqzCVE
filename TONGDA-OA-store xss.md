@@ -35,4 +35,4 @@ URL_NO=1&URL_DESC=cyberlab"]%3balert(1)//&URL=http%3A%2F%2Ftest.com&button=%CC%E
 
 访问主页面，漏洞触发:
 
-![image](https://github.com/jqz41401/jqzCVE/img/tongda_xss.jpg)
+![image](https://github.com/jqz41401/jqzCVE/blob/master/img/tongda_xss.jpg)
