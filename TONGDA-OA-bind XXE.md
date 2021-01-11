@@ -2,7 +2,7 @@
 
 ## 漏洞描述
 
-通达 OA 日程安排，日程数据导入处存在XXE漏洞
+通达 OA 个人事务->日程，日程数据导入处存在XXE漏洞
 
 ## 复现步骤
 
@@ -33,7 +33,7 @@
 </AFFAIRS>
 ```
 
-远程vps主机创建xxe.dtd，内容如下所示，读取本地的xxe.txt文件
+远程主机主机创建xxe.dtd，内容如下所示，读取本地的xxe.txt文件
 
 ```shell
 root@iZwz9akazugpwbrb1xtlw8Z:~# cat /tmp/tmp/xxe.dtd
